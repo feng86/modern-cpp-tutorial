@@ -77,7 +77,7 @@ void lambda_reference_capture() {
 - \[\] 空捕获列表
 - \[name1, name2, ...\] 捕获一系列变量
 - \[&\] 引用捕获, 让编译器自行推导捕获列表
-- \[=\] 值捕获, 让编译器执行推导应用列表
+- \[=\] 值捕获, 让编译器执行推导引用列表
 
 **4. 表达式捕获**
 
@@ -225,6 +225,22 @@ int main() {
 要么是求值结果相当于字面量或匿名临时对象，例如 `1+2`。非引用返回的临时变量、运算表达式产生的临时变量、
 原始字面量、Lambda 表达式都属于纯右值。
 
+需要注意的是，字符串字面量只有在类中才是右值，当其位于普通函数中是左值。例如：
+
+```cpp
+class Foo {
+        const char*&& right = "this is a rvalue"; // 此处字符串字面量为右值
+public:
+        void bar() {
+            right = "still rvalue"; // 此处字符串字面量为右值
+        } 
+};
+
+int main() {
+    const char* const &left = "this is an lvalue"; // 此处字符串字面量为左值
+}
+```
+
 **将亡值(xvalue, expiring value)**，是 C++11 为了引入右值引用而提出的概念（因此在传统 C++中，
 纯右值和右值是同一个概念），也就是即将被销毁、却能够被移动的值。
 
@@ -252,7 +268,7 @@ std::vector<int> v = foo();
 
 ### 右值引用和左值引用
 
-需要拿到一个将亡值，就需要用到右值引用的申明：`T &&`，其中 `T` 是类型。
+要拿到一个将亡值，就需要用到右值引用：`T &&`，其中 `T` 是类型。
 右值引用的声明让这个临时值的生命周期得以延长、只要变量还活着，那么将亡值将继续存活。
 
 C++11 提供了 `std::move` 这个方法将左值参数无条件的转换为右值，
@@ -470,7 +486,7 @@ void pass(T&& v) {
     std::cout << "    std::forward 传参: ";
     reference(std::forward<T>(v));
     std::cout << "static_cast<T&&> 传参: ";
-    reference(std::forward<T>(v));
+    reference(static_cast<T&&>(v));
 }
 int main() {
     std::cout << "传递右值:" << std::endl;

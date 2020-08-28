@@ -87,9 +87,8 @@ So, develop the habit of using `nullptr` directly.
 In addition, in the above code, we used `decltype` and 
 `std::is_same` which are modern C++ syntax. 
 In simple terms, `decltype` is used for type derivation, 
-and `std::is_same` is used. 
-To compare the equality of the two types, 
-we will discuss them in detail later in the [decltype](#decltype) section.
+and `std::is_same` is used to compare the equality of the two types. 
+We will discuss them in detail later in the [decltype](#decltype) section.
 
 ### constexpr
 
@@ -143,7 +142,7 @@ In the above example, `char arr_4[len_2]` may be confusing because `len_2` has b
 Why is `char arr_4[len_2]` still illegal? 
 This is because the length of the array in the C++ standard must be a constant expression, 
 and for `len_2`, this is a `const` constant, not a constant expression, 
-so even if this behavior is in most compilers Both support, but) it is an illegal behavior, 
+so even if this behavior is supported by most compilers, but it is an illegal behavior, 
 we need to use the `constexpr` feature introduced in C++11, which will be introduced next, 
 to solve this problem; for `arr_5`, before C++98 The compiler cannot know that `len_foo()` 
 actually returns a constant at runtime, which causes illegal production.
@@ -155,7 +154,7 @@ actually returns a constant at runtime, which causes illegal production.
 C++11 provides `constexpr` to let the user explicitly declare that the function or 
 object constructor will become a constant expression at compile time. 
 This keyword explicitly tells the compiler that it should verify that `len_foo` 
-should be a compile time. Constant expression.
+should be a compile time constant expression. Constant expression.
 
 In addition, the function of `constexpr` can use recursion:
 
@@ -222,8 +221,8 @@ int main() {
 ```
 
 In the above code, we can see that the `itr` variable is defined in the scope of 
-the entire `main()`, which causes us to rename the other when we need to traverse 
-the entire `std::vectors` again. A variable. C++17 eliminates this limitation so that 
+the entire `main()`, which causes us to rename the other when a variable need to traverse 
+the entire `std::vectors` again. C++17 eliminates this limitation so that 
 we can do this in if(or switch):
 
 ```cpp
@@ -280,7 +279,7 @@ To solve this problem,
 C++11 first binds the concept of the initialization list to the type 
 and calls it `std::initializer_list`, 
 allowing the constructor or other function to use the initialization list 
-like a parameter, which is The initialization of class objects provides 
+like a parameter, which is the initialization of class objects provides 
 a unified bridge between normal arrays and POD initialization methods, 
 such as:
 
@@ -427,16 +426,16 @@ auto arr = new auto(10); // arr as int *
 > In addition, `auto` cannot be used to derive array types:
 > 
 > ```cpp
-> auto auto_arr2[10] = arr;   // illegal, can't infer array type
+> auto auto_arr2[10] = {arr};   // illegal, can't infer array type
 >
 > 2.6.auto.cpp:30:19: error: 'auto_arr2' declared as array of 'auto'
->     auto auto_arr2[10] = arr;
+>     auto auto_arr2[10] = {arr};
 > ```
 
 ### decltype
 
 The `decltype` keyword is used to solve the defect that the auto keyword 
-can only type the variable. Its usage is very similar to `sizeof`:
+can only type the variable. Its usage is very similar to `typeof`:
 
 
 ```cpp
@@ -874,7 +873,7 @@ What we mainly mentioned above is a form of template parameters: type template p
 
 ```cpp
 template <typename T, typename U>
-    auto add(T t, U u) {
+auto add(T t, U u) {
     return t+u;
 }
 ```
@@ -961,7 +960,7 @@ public:
 };
 class Subclass : public Base {
 public:
-    using Base::Base; // inhereit constructor
+    using Base::Base; // inheritance constructor
 };
 int main() {
     Subclass s(3);
